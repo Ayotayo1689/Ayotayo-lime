@@ -1,0 +1,24 @@
+.Btnloader {
+    width: 24px;
+    height: 24px;
+    background: #c7c7c7;
+    border-radius: 50%;
+    position: relative;
+    animation: roll 2s ease-in-out infinite alternate;
+  }
+  .Btnloader:after{
+    content:"";
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    border: 5px solid ;
+    border-color: #8a8a8a transparent;
+  }
+  @keyframes roll {
+    0% {
+      transform: translateX(-200%) rotate(0deg) ;
+    }
+    100% {
+      transform:  translateX(600%) rotate(360deg);
+    }
+  }
