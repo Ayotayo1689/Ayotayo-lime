@@ -1,0 +1,94 @@
+# Default values for limestone-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Deployment
+deployment:
+  image: "lohacr.azurecr.io/community-admin-v2"
+  tag: "version"
+  pullPolicy: IfNotPresent
+  replicas: 1
+  port: 80
+  name: "community-admin-v2" # set the deployment name
+
+# Namespace
+namespace: "ls-development"
+
+# Resources
+resources:
+  limits:
+    memory: "200Mi"
+    cpu: "70m"
+  requests:
+    cpu: "50m"
+    memory: "100Mi"
+
+# Environment
+environment:
+# uncomment name below to set environment variables to `Development` or `Staging`. Production does not have a label
+# Must be set to `Development` for development deployments and `Staging` for staging deployments.
+  name: "Development"
+
+# Tolerations
+tolerations:
+  enabled: false # set to `false` for production alone. Must be `true` for Staging and Development
+  key: "kubernetes.azure.com/scalesetpriority"
+  operator: "Equal"
+  value: "yes"
+  effects: "PreferNoSchedule"
+
+# Service
+service:
+  type: ClusterIP # NodePort, LoadBalancer, ClusterIP
+  protocol:
+    name: TCP
+    http: 80
+  annotations:
+    enabled: false # Set as `true` for apis that uses internal loadbalancer with apim
+    annotations: 'service.beta.kubernetes.io/azure-load-balancer-internal: "true"'
+
+# Environment Variables sources
+env:
+  secret:
+    # set to `true` to create a secret with the environment variables. Secret name is same with the deployment name.
+    # data should contain key value pairs in the format of "key":"value".
+    create: false
+    data: {}
+
+  configmap:
+    # set to `true` to create a configmap with the environment variables. Configmap name is same with the deployment name.
+    # data should contain key value pairs in the format of "key":"value".
+    create: false 
+    data: 
+      {}
+
+# autoscaling
+# This is used for scaling pods horizontally.
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# persistent volume
+pv:
+  # uncomment below to set persistent volume
+  create: false # true: create pv | false: do not create pvc
+  name: "limestone-pv"
+  size: 8Gi
+  path: "/var/lib/limestone"
+  storageClass: "azurefile-csi"
+
+# volume
+volume:
+  bind: false # set to `true` to bind a volume. Note that `pvc.create` must be set to true for the data to be persistent.
+  path: "/mnt/data" # Set to the correct path your application needs.
+
+# persistent volume claim
+pvc:
+  create: false # true: create pvc | false: do not create pvc. Note that `volume.bind` must be true for this to be bond to a pod.
+  name: "limestone-pvc"
+  size: 8Gi
+  storageClass: "azurefile-csi"
